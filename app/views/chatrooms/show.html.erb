@@ -1,0 +1,25 @@
+<div class="container">
+  <h1><%= @chatroom.name %></h1>
+
+  <div class="row">
+    <div class="col-md-8">
+      <ul id="messages" class="list-unstyled">
+        <% @chatroom.messages.each do |message| %>
+          <li class="mb-3">
+            <strong><%= message.user.username %>:</strong>
+            <%= message.body %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <%= form_with(model: [@chatroom, @message], remote: true, class: "mb-3") do |form| %>
+        <div class="form-group">
+          <%= form.text_area :body, placeholder: "Type your message...", class: "form-control" %>
+        </div>
+        <%= form.submit "Send", class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  </div>
+</div>
+

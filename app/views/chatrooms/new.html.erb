@@ -1,0 +1,25 @@
+<!-- app/views/chatrooms/new.html.erb -->
+<div class="container">
+  <h1>Create a new chatroom</h1>
+
+  <%= form_with(model: @chatroom, local: true) do |form| %>
+    <% if @chatroom.errors.any? %>
+      <div id="error_explanation" class="alert alert-danger">
+        <h2><%= pluralize(@chatroom.errors.count, "error") %> prohibited this chatroom from being saved:</h2>
+
+        <ul>
+          <% @chatroom.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="form-group">
+      <%= form.label :name %>
+      <%= form.text_field :name, class: "form-control", placeholder: "Enter the chatroom name" %>
+    </div>
+
+    <%= form.submit "Create Chatroom", class: "btn btn-primary" %>
+  <% end %>
+</div>

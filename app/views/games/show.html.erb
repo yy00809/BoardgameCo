@@ -1,0 +1,91 @@
+<div class="container">
+  <div class="row mt-4">
+    <div class="col-md-8">
+      <h1><%= @game.name %></h1>
+
+      <p><strong>Number of Players:</strong> <%= @game.number_of_players %></p>
+      <p><strong>Age limit:</strong> <%= @game.age_limit %></p>
+      <p><strong>Description:</strong> <%= @game.description %></p>
+      <p><strong>Rules:</strong> <%= @game.rules %></p>
+
+     
+      <%= form_with(url: current_user.games.include?(@game) ? url_for(user_game_path) : url_for(user_games_path), method: current_user.games.include?(@game) ? :delete : :post, local: true) do |form| %>
+
+        <%= form.hidden_field :game_id, value: @game.id %>
+        <% if current_user.games.include?(@game) %>
+          <%= form.submit "Remove from collection", class: "btn btn-danger" %>
+        <% else %>
+          <%= form.submit "Add to collection", class: "btn btn-primary" %>
+        <% end %>
+      <% end %>
+      
+      <% if @game.game_variants.any? %>
+        <h2>Here To Buy </h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Link</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @game.game_variants.each do |variant| %>
+              <tr>
+                <td><%= variant.name %></td>
+                <td><%= link_to truncate(variant.link, length: 30), variant.link, target: "_blank" %></td>
+                <td><%= variant.price %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+
+      <h2>Comments</h2>
+      <% @game.comments.sort_by { |comment| comment.user == current_user ? 0 : 1 }.each do |comment| %>
+        <div class="comment-container">
+          <p class="comment"><strong><%= comment.user.username %>:</strong> <%= comment.content %></p>
+          <% if comment.user == current_user %>
+            <%= button_to game_comment_path(@game, comment), method: :delete, class: "delete-comment-btn", data: { confirm: "Are you sure you want to delete this comment?" } do %>
+              <i class="fas fa-times"></i>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if user_signed_in? %>
+        <%= form_with(url: game_comments_path(@game), method: :post, local: true) do |form| %>
+          <%= form.hidden_field :game_id, value: @game.id %>
+          <div class="form-group">
+            <%= form.label :content, "Add a comment" %>
+            <%= form.text_area :content, class: "form-control" , name: "comment[content]"%>
+          </div>
+          <%= form.submit "Add comment", class: "btn btn-primary" %>
+        <% end %>
+      <% end %>
+
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Rate</h5>
+          <p class="card-text"><%= @game.calculate_average_rate %></p>
+            <% if user_signed_in? && !@game.ratings.exists?(user_id: current_user.id) %>
+              <%= form_with(url: game_ratings_path(@game), method: :post, local: true) do |form| %>
+                <%= form.hidden_field :game_id, value: @game.id %>
+                <div class="form-group">
+                  <%= form.label :value, "Choose a rating" %>
+                  <%= form.select :value, Rating::GAME_RATING_RANGE, {}, {class: "form-control", name: "rating[value]"} %>
+                </div>
+                <%= form.submit "Submit rating", class: "btn btn-primary" %>
+              <% end %>
+            <% end %>
+            <%= link_to "House Rules", game_house_rules_path(@game), class: "btn btn-primary" %>
+            <%= link_to "Q&A", game_q_and_as_path(@game), class: "btn btn-primary" %>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

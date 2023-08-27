@@ -1,0 +1,13 @@
+<div class="container">
+  <h1 class="mb-4">Chatrooms</h1>
+
+  <div class="card">
+    <ul class="list-group list-group-flush">
+      <% @chatrooms.each do |chatroom| %>
+        <li class="list-group-item"><%= link_to chatroom.name, chatroom_path(chatroom) %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <%= link_to "Create a new chatroom", new_chatroom_path, class: "btn btn-primary mt-3" %>
+</div>

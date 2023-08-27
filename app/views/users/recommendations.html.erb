@@ -1,0 +1,10 @@
+<h1>Recommended Games</h1>
+
+<ul class="list-group">
+  <% @recommended_games.each do |game| %>
+    <li class="list-group-item">
+      <%= link_to game.name, game_path(game.id) %>
+      <span class="badge badge-secondary float-right"><%= game.type %></span>
+    </li>
+  <% end %>
+</ul>
